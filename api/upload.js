@@ -1,12 +1,6 @@
 // api/upload.js
-const BusboyModule = require('busboy');
+const busboy = require('busboy');       // <- factory function in v1+
 const { put } = require('@vercel/blob');
-
-// Support both CommonJS and ESM-style exports
-const Busboy =
-  typeof BusboyModule === 'function'
-    ? BusboyModule
-    : BusboyModule.default;
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
@@ -16,7 +10,7 @@ module.exports = async (req, res) => {
     return;
   }
 
-  // Use whichever token is available
+  // Use whichever env var is set
   const token =
     process.env.BLOB_READ_WRITE_TOKEN ||
     process.env.BLOB2_READ_WRITE_TOKEN;
@@ -29,7 +23,6 @@ module.exports = async (req, res) => {
     return;
   }
 
-  // Make sure we actually have multipart data
   const contentType = req.headers['content-type'] || '';
   if (!contentType.startsWith('multipart/form-data')) {
     res.statusCode = 400;
@@ -38,7 +31,8 @@ module.exports = async (req, res) => {
     return;
   }
 
-  const bb = new Busboy({ headers: req.headers });
+  // IMPORTANT: busboy v1.x is called as a function, not `new Busboy()`
+  const bb = busboy({ headers: req.headers });
 
   let fileBuffer = null;
   let fileName = null;
@@ -74,7 +68,7 @@ module.exports = async (req, res) => {
 
       const blob = await put(pathname, fileBuffer, {
         access: 'public',
-        token, // important!
+        token,          // <- pass token explicitly
       });
 
       res.statusCode = 200;
