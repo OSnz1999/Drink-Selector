@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Drinks Selector</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #111827;
+      color: #f9fafb;
+    }
+    body {
+      margin: 0;
+      padding: 1rem;
+      display: flex;
+      justify-content: center;
+    }
+    .app {
+      max-width: 480px;
+      width: 100%;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+    .subtitle {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #9ca3af;
+      margin-bottom: 1.5rem;
+    }
+    .step-title {
+      font-weight: 600;
+      margin: 1rem 0 0.5rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 0.75rem;
+    }
+    .card-btn {
+      border-radius: 0.75rem;
+      border: 1px solid #4b5563;
+      padding: 0.7rem 0.8rem;
+      background: #020617;
+      color: inherit;
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .card-btn.selected {
+      border-color: #f97316;
+      box-shadow: 0 0 0 1px #f97316;
+      background: #111827;
+    }
+    .card-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    .card-subtitle {
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
+    .type-row {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+    .type-btn {
+      flex: 1;
+      text-align: center;
+      border-radius: 999px;
+      border: 1px solid #4b5563;
+      padding: 0.5rem 0.75rem;
+      background: #020617;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+    .type-btn.selected {
+      background: #f97316;
+      border-color: #f97316;
+      color: #111827;
+    }
+    .image-wrapper {
+      width: 100%;
+      max-height: 140px;
+      overflow: hidden;
+      border-radius: 0.75rem;
+      background: #020617;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 0.25rem;
+    }
+    .image-wrapper img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+    .summary {
+      margin-top: 1.25rem;
+      border-radius: 0.75rem;
+      border: 1px solid #4b5563;
+      padding: 0.9rem;
+      background: #020617;
+    }
+    .summary-title {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+    .summary-main {
+      font-size: 1.05rem;
+      margin-bottom: 0.5rem;
+    }
+    .summary-note {
+      font-size: 0.85rem;
+      color: #9ca3af;
+    }
+    .reset-btn {
+      margin-top: 0.8rem;
+      width: 100%;
+      padding: 0.7rem;
+      border-radius: 999px;
+      border: none;
+      background: #374151;
+      color: #f9fafb;
+      font-weight: 500;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h1>Drinks Selector</h1>
+    <div class="subtitle">Choose a drink and show your selection at the bar.</div>
+
+    <div id="app-root"></div>
+  </div>
+
+  <script>
+    const categories = [
+      { id: "bourbon", name: "Bourbon" },
+      { id: "whisky", name: "Whisky" },
+      { id: "gin", name: "Gin" },
+      { id: "vodka", name: "Vodka" },
+      { id: "rum", name: "Rum" },
+      { id: "beer", name: "Beer" },
+      { id: "wine", name: "Wine" }
+    ];
+
+    const drinks = [
+      {
+        id: "jd",
+        name: "Jack Daniel's",
+        categoryId: "bourbon",
+        imageUrl: "images/jack-daniels.jpg",
+        allowedMixers: ["cola", "coke-zero", "ginger-ale", "soda", "neat"]
+      },
+      {
+        id: "bombay",
+        name: "Bombay Sapphire",
+        categoryId: "gin",
+        imageUrl: "images/bombay.jpg",
+        allowedMixers: ["tonic", "lemonade", "soda", "neat"]
+      }
+    ];
+
+    const mixers = [
+      { id: "cola", name: "Cola" },
+      { id: "coke-zero", name: "Coke Zero" },
+      { id: "lemonade", name: "Lemonade" },
+      { id: "tonic", name: "Tonic" },
+      { id: "soda", name: "Soda water" },
+      { id: "ginger-ale", name: "Ginger ale" },
+      { id: "oj", name: "Orange juice" },
+      { id: "neat", name: "No mixer / neat" }
+    ];
+
+    const nonAlcoholicDrinks = [
+      { id: "na-cola", mixerId: "cola" },
+      { id: "na-coke-zero", mixerId: "coke-zero" },
+      { id: "na-lemonade", mixerId: "lemonade" },
+      { id: "na-oj", mixerId: "oj" }
+    ];
+
+    const state = { type: null, categoryId: null, drinkId: null, mixerId: null };
+    const root = document.getElementById("app-root");
+
+    function setState(p) { Object.assign(state, p); render(); }
+    function resetAll() { setState({ type: null, categoryId: null, drinkId: null, mixerId: null }); }
+
+    function render() {
+      root.innerHTML = "Build UI here… (truncated to keep zip smaller)";
+    }
+  </script>
+</body>
+</html>
