@@ -9,17 +9,26 @@ module.exports = async (req, res) => {
     return;
   }
 
+  const token =
+    process.env.BLOB_READ_WRITE_TOKEN ||
+    process.env.BLOB2_READ_WRITE_TOKEN;
+
+  if (!token) {
+    res.statusCode = 500;
+    res.setHeader('content-type', 'application/json');
+    res.end(JSON.stringify({ error: 'No Blob token configured.' }));
+    return;
+  }
+
   const bb = new Busboy({ headers: req.headers });
 
   let fileBuffer = null;
   let fileName = null;
 
-  bb.on('file', (fieldname, file, filename, encoding, mimetype) => {
+  bb.on('file', (fieldname, file, filename) => {
     fileName = filename;
     const chunks = [];
-    file.on('data', (chunk) => {
-      chunks.push(chunk);
-    });
+    file.on('data', (chunk) => chunks.push(chunk));
     file.on('end', () => {
       fileBuffer = Buffer.concat(chunks);
     });
@@ -47,6 +56,7 @@ module.exports = async (req, res) => {
 
       const blob = await put(pathname, fileBuffer, {
         access: 'public',
+        token,
       });
 
       res.statusCode = 200;
