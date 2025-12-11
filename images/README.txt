@@ -1,5 +1,5 @@
-Place any manually-managed drink bottle photos in this folder.
+You can put bottle photos in this folder and reference them
+by file name in the Admin → Drinks image field (e.g. jack-daniels.jpg).
 
-If you also use the drag-and-drop uploader in the Admin area,
-those images will be stored in Vercel Blob instead and referenced
-by full URLs (no need to put them here).
+If you use the in-app uploader, those files will be stored in Vercel Blob
+and referenced by full URLs instead.

@@ -1,46 +1,64 @@
-import { put } from '@vercel/blob';
+const Busboy = require('busboy');
+const { put } = require('@vercel/blob');
 
-export const config = {
-  runtime: 'edge',
-};
-
-export default async function handler(request) {
-  if (request.method !== 'POST') {
-    return new Response('Method Not Allowed', { status: 405 });
+module.exports = async (req, res) => {
+  if (req.method !== 'POST') {
+    res.statusCode = 405;
+    res.setHeader('Allow', 'POST');
+    res.end('Method Not Allowed');
+    return;
   }
 
-  try {
-    const formData = await request.formData();
-    const file = formData.get('file');
+  const bb = new Busboy({ headers: req.headers });
 
-    if (!file || typeof file === 'string') {
-      return new Response(JSON.stringify({ error: 'No file uploaded' }), {
-        status: 400,
-        headers: { 'content-type': 'application/json' },
+  let fileBuffer = null;
+  let fileName = null;
+
+  bb.on('file', (fieldname, file, filename, encoding, mimetype) => {
+    fileName = filename;
+    const chunks = [];
+    file.on('data', (chunk) => {
+      chunks.push(chunk);
+    });
+    file.on('end', () => {
+      fileBuffer = Buffer.concat(chunks);
+    });
+  });
+
+  bb.on('error', (err) => {
+    console.error('Busboy error:', err);
+    res.statusCode = 500;
+    res.setHeader('content-type', 'application/json');
+    res.end(JSON.stringify({ error: 'Upload error parsing form data.' }));
+  });
+
+  bb.on('finish', async () => {
+    try {
+      if (!fileBuffer || !fileName) {
+        res.statusCode = 400;
+        res.setHeader('content-type', 'application/json');
+        res.end(JSON.stringify({ error: 'No file received.' }));
+        return;
+      }
+
+      const safeName = fileName.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+      const timestamp = Date.now();
+      const pathname = `drinks/${timestamp}-${safeName}`;
+
+      const blob = await put(pathname, fileBuffer, {
+        access: 'public',
       });
+
+      res.statusCode = 200;
+      res.setHeader('content-type', 'application/json');
+      res.end(JSON.stringify({ url: blob.url, pathname: blob.pathname }));
+    } catch (err) {
+      console.error('Upload handler error:', err);
+      res.statusCode = 500;
+      res.setHeader('content-type', 'application/json');
+      res.end(JSON.stringify({ error: 'Upload failed. Check Vercel Blob configuration.' }));
     }
+  });
 
-    const originalName = file.name || 'upload';
-    const safeName = originalName.replace(/[^a-zA-Z0-9.\-_]/g, '_');
-    const timestamp = Date.now();
-    const pathname = `drinks/${timestamp}-${safeName}`;
-
-    const blob = await put(pathname, file, {
-      access: 'public',
-      addRandomSuffix: false,
-    });
-
-    return new Response(JSON.stringify({ url: blob.url, pathname: blob.pathname }), {
-      status: 200,
-      headers: { 'content-type': 'application/json' },
-    });
-  } catch (err) {
-    console.error('Upload error', err);
-    return new Response(JSON.stringify({
-      error: 'Upload failed. Check Vercel Blob configuration.',
-    }), {
-      status: 500,
-      headers: { 'content-type': 'application/json' },
-    });
-  }
-}
+  req.pipe(bb);
+};
