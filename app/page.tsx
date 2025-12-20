@@ -1,66 +1,47 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import Link from "next/link";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { ArrowRight, Settings } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="flex flex-col items-center justify-center min-h-[80vh] gap-8">
+      <div className="text-center space-y-2">
+        <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-orange-400 to-amber-200 bg-clip-text text-transparent" style={{ backgroundImage: 'linear-gradient(to right, #fb923c, #fcd34d)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+          Drink Selector
+        </h1>
+        <p className="text-muted-foreground text-lg">
+          Avoid the queue. Pre-select your drink.
+        </p>
+      </div>
+
+      <Card className="w-full space-y-6 bg-opacity-50">
+        <div className="space-y-4">
+          <Link href="/guest" className="block w-full">
+            <Button size="lg" className="w-full text-lg h-16" fullWidth>
+              Start Ordering
+              <ArrowRight className="ml-2 w-5 h-5" />
+            </Button>
+          </Link>
+
+          <div className="relative flex py-2 items-center">
+            <div className="flex-grow border-t border-slate-700"></div>
+            <span className="flex-shrink-0 mx-4 text-slate-500 text-xs uppercase tracking-wider">Staff Access</span>
+            <div className="flex-grow border-t border-slate-700"></div>
+          </div>
+
+          <Link href="/admin" className="block w-full">
+            <Button variant="secondary" className="w-full" fullWidth>
+              <Settings className="mr-2 w-4 h-4" />
+              Event Manager
+            </Button>
+          </Link>
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+      </Card>
+
+      <p className="text-xs text-slate-600">
+        © {new Date().getFullYear()} Event Bar Services
+      </p>
     </div>
   );
 }
