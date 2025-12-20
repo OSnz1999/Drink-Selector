@@ -147,21 +147,5 @@
       "date": "2025-12-21"
     }
   ],
-  "bookings": [
-    {
-      "id": "x8u0z0jb6",
-      "guestName": "Olivert",
-      "eventId": "tasting",
-      "eventName": "Whisky Tasting",
-      "drinkId": "jd",
-      "drinkName": "Jack Daniel's",
-      "mixerIds": [
-        "ginger-ale"
-      ],
-      "mixerNames": [
-        "Ginger ale"
-      ],
-      "timestamp": "2025-12-20T01:38:09.038Z"
-    }
-  ]
+  "bookings": []
 }

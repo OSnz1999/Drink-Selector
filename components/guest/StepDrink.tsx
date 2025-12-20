@@ -17,19 +17,21 @@ export function StepDrink({ drinks, onSelect }: StepDrinkProps) {
 
             <div className="grid grid-cols-2 gap-4">
                 {drinks.map(drink => (
-                    <button key={drink.id} onClick={() => onSelect(drink.id)} className="text-left group w-full">
-                        <Card className="p-0 overflow-hidden h-40 flex flex-col hover:border-orange-500 transition-colors border border-transparent bg-slate-900">
-                            <div className="flex-1 bg-gradient-to-b from-slate-800 to-slate-900 relative flex items-center justify-center p-4">
+                    <button key={drink.id} onClick={() => onSelect(drink.id)} className="text-left group w-full focus:outline-none">
+                        <Card className="p-0 overflow-hidden h-48 flex flex-col hover:border-orange-500 transition-all duration-300 border border-slate-800 bg-slate-900 group-focus:ring-2 group-focus:ring-orange-500 shadow-lg hover:shadow-orange-900/10">
+                            <div className="flex-1 bg-gradient-to-b from-slate-800 to-slate-900 relative flex items-center justify-center p-6 group-hover:scale-105 transition-transform duration-500">
                                 {drink.image ? (
-                                    <img src={drink.image} alt={drink.name} className="max-h-full max-w-full object-contain drop-shadow-xl" />
+                                    <img src={drink.image} alt={drink.name} className="max-h-full max-w-full object-contain drop-shadow-2xl" />
                                 ) : (
-                                    <div className="text-center opacity-30">
-                                        <span className="text-4xl block mb-1">🥃</span>
+                                    <div className="text-center opacity-30 flex flex-col items-center">
+                                        <span className="text-5xl block mb-2 filter grayscale">🥃</span>
                                     </div>
                                 )}
                             </div>
-                            <div className="p-3 bg-slate-950 border-t border-slate-800">
-                                <span className="font-semibold text-sm text-slate-100">{drink.name}</span>
+                            <div className="p-4 bg-slate-950 border-t border-slate-800 relative z-10">
+                                <span className="font-bold text-base text-slate-100 block leading-tight group-hover:text-orange-400 transition-colors">
+                                    {drink.name}
+                                </span>
                             </div>
                         </Card>
                     </button>
