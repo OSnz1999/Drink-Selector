@@ -7,31 +7,34 @@ import { DrinkManager } from "./DrinkManager";
 import { CategoryManager } from "./CategoryManager";
 import { EventManager } from "./EventManager";
 import { BookingList } from "./BookingList";
+import { AnalyticsDashboard } from "./AnalyticsDashboard";
 import { saveAppData } from "@/lib/storage";
 import { Loader2, Save } from "lucide-react";
+import { toast } from "sonner";
 
 interface AdminDashboardProps {
     initialData: AppData;
 }
 
-type Tab = "DRINKS" | "CATEGORIES" | "EVENTS" | "BOOKINGS";
+type Tab = "ANALYTICS" | "DRINKS" | "CATEGORIES" | "EVENTS" | "BOOKINGS";
 
 export function AdminDashboard({ initialData }: AdminDashboardProps) {
     const [data, setData] = useState<AppData>(initialData);
-    const [activeTab, setActiveTab] = useState<Tab>("DRINKS");
+    const [activeTab, setActiveTab] = useState<Tab>("ANALYTICS");
     const [saving, setSaving] = useState(false);
-    const [message, setMessage] = useState<string | null>(null);
 
     const handleSave = async () => {
         setSaving(true);
-        setMessage(null);
         try {
             await saveAppData(data);
-            setMessage("Saved successfully!");
-            setTimeout(() => setMessage(null), 3000);
+            toast.success('Changes saved successfully!', {
+                description: 'Your updates have been saved.',
+            });
         } catch (err) {
             console.error(err);
-            setMessage("Failed to save.");
+            toast.error('Failed to save changes', {
+                description: 'Please try again.',
+            });
         } finally {
             setSaving(false);
         }
@@ -43,11 +46,31 @@ export function AdminDashboard({ initialData }: AdminDashboardProps) {
 
     return (
         <div className="space-y-6">
-            <div className="flex gap-2 justify-center flex-wrap px-4">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-400 to-amber-200 bg-clip-text text-transparent">
+                        Event Manager
+                    </h1>
+                    <p className="text-slate-400 text-sm mt-1">Manage your event drinks and settings</p>
+                </div>
+            </div>
+
+            {/* Tabs */}
+            <div className="flex gap-2 justify-center flex-wrap px-4 border-b border-slate-800">
+                <Button
+                    variant={activeTab === "ANALYTICS" ? "primary" : "secondary"}
+                    size="sm"
+                    onClick={() => setActiveTab("ANALYTICS")}
+                    className={activeTab === "ANALYTICS" ? "border-b-2 border-orange-500 rounded-b-none" : ""}
+                >
+                    Analytics
+                </Button>
                 <Button
                     variant={activeTab === "DRINKS" ? "primary" : "secondary"}
                     size="sm"
                     onClick={() => setActiveTab("DRINKS")}
+                    className={activeTab === "DRINKS" ? "border-b-2 border-orange-500 rounded-b-none" : ""}
                 >
                     Drinks
                 </Button>
@@ -55,6 +78,7 @@ export function AdminDashboard({ initialData }: AdminDashboardProps) {
                     variant={activeTab === "CATEGORIES" ? "primary" : "secondary"}
                     size="sm"
                     onClick={() => setActiveTab("CATEGORIES")}
+                    className={activeTab === "CATEGORIES" ? "border-b-2 border-orange-500 rounded-b-none" : ""}
                 >
                     Categories
                 </Button>
@@ -62,6 +86,7 @@ export function AdminDashboard({ initialData }: AdminDashboardProps) {
                     variant={activeTab === "EVENTS" ? "primary" : "secondary"}
                     size="sm"
                     onClick={() => setActiveTab("EVENTS")}
+                    className={activeTab === "EVENTS" ? "border-b-2 border-orange-500 rounded-b-none" : ""}
                 >
                     Events
                 </Button>
@@ -69,12 +94,18 @@ export function AdminDashboard({ initialData }: AdminDashboardProps) {
                     variant={activeTab === "BOOKINGS" ? "primary" : "secondary"}
                     size="sm"
                     onClick={() => setActiveTab("BOOKINGS")}
+                    className={activeTab === "BOOKINGS" ? "border-b-2 border-orange-500 rounded-b-none" : ""}
                 >
                     Bookings
                 </Button>
             </div>
 
+            {/* Tab Content */}
             <div className="min-h-[50vh]">
+                {activeTab === "ANALYTICS" && (
+                    <AnalyticsDashboard data={data} />
+                )}
+
                 {activeTab === "DRINKS" && (
                     <DrinkManager
                         data={data}
@@ -101,21 +132,17 @@ export function AdminDashboard({ initialData }: AdminDashboardProps) {
                 )}
             </div>
 
+            {/* Save Button */}
             <div className="fixed bottom-6 right-6 md:relative md:bottom-auto md:right-auto md:flex md:justify-end">
                 <Button
                     onClick={handleSave}
                     disabled={saving}
-                    className="shadow-xl bg-green-600 hover:bg-green-700 text-white"
+                    className="shadow-xl bg-green-600 hover:bg-green-700 text-white gap-2"
                 >
-                    {saving ? <Loader2 className="animate-spin w-4 h-4 mr-2" /> : <Save className="w-4 h-4 mr-2" />}
-                    Save Changes
+                    {saving ? <Loader2 className="animate-spin w-4 h-4" /> : <Save className="w-4 h-4" />}
+                    {saving ? "Saving..." : "Save Changes"}
                 </Button>
             </div>
-            {message && (
-                <div className="fixed bottom-20 left-1/2 -translate-x-1/2 bg-slate-800 border border-slate-700 px-4 py-2 rounded-full text-sm shadow-lg animate-in fade-in slide-in-from-bottom-2">
-                    {message}
-                </div>
-            )}
         </div>
     );
 }
