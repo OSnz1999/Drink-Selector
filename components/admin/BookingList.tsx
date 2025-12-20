@@ -24,10 +24,10 @@ export function BookingList({ data }: BookingListProps) {
                 <Card key={booking.id} className="p-4 flex gap-4 bg-slate-900/40 border-slate-800">
                     <div className="w-16 h-16 bg-slate-800 rounded-lg overflow-hidden shrink-0">
                         {booking.selfieUrl ? (
-                            <img src={booking.selfieUrl} className="w-full h-full object-cover" />
+                            <img src={booking.selfieUrl} className="w-full h-full object-cover" alt="Guest" />
                         ) : (
-                            <div className="flex items-center justify-center h-full text-slate-600">
-                                <User className="w-8 h-8" />
+                            <div className="flex items-center justify-center h-full text-slate-500 bg-slate-800/50">
+                                <User className="w-6 h-6" />
                             </div>
                         )}
                     </div>

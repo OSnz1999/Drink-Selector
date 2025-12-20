@@ -48,10 +48,16 @@ export function StepSummary({ state, data, onRestart }: StepSummaryProps) {
                         )}
                     </div>
 
-                    {state.selfieUrl && (
+                    {state.selfieUrl ? (
                         <div className="flex justify-center">
-                            <div className="w-32 h-32 rounded-full border-4 border-slate-700 overflow-hidden shadow-xl">
-                                <img src={state.selfieUrl} className="w-full h-full object-cover" />
+                            <div className="w-32 h-32 rounded-full border-4 border-slate-700 overflow-hidden shadow-xl bg-slate-800">
+                                <img src={state.selfieUrl} className="w-full h-full object-cover" alt="Guest Selfie" />
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="flex justify-center">
+                            <div className="w-32 h-32 rounded-full border-4 border-slate-700 bg-slate-800 flex items-center justify-center shadow-xl">
+                                <span className="text-4xl">😎</span>
                             </div>
                         </div>
                     )}

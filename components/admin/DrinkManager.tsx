@@ -167,7 +167,11 @@ export function DrinkManager({ data, onChange }: DrinkManagerProps) {
                             onClick={() => startEdit(drink)}
                         >
                             <div className="w-12 h-12 bg-slate-950 rounded border border-slate-800 flex items-center justify-center overflow-hidden shrink-0">
-                                {drink.image ? <img src={drink.image} className="w-full h-full object-cover" /> : "🥃"}
+                                {drink.image ? (
+                                    <img src={drink.image} className="w-full h-full object-cover" alt={drink.name} />
+                                ) : (
+                                    <span className="text-2xl opacity-50">🥃</span>
+                                )}
                             </div>
                             <div className="flex-1 min-w-0">
                                 <div className="font-semibold truncate">{drink.name}</div>
